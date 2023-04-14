@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Bouncing Shaded Cubes, Spheres, and Pyramids using Three.js</title>
+    <title>Bouncing and Rotating Shaded Objects using Three.js</title>
     <style>
       body {
         margin: 0;
@@ -59,14 +59,15 @@
       }
 
       // Initialize the shapes and set random positions and velocities
-      for (let i = 0; i < 2; i++) {
+      for (let i = 0; i < 7; i++) {
         const cube = createCube(0x00ff00);
         const sphere = createSphere(0xffff00);
         const pyramid = createPyramid(0xff0000);
 
         for (const shape of [cube, sphere, pyramid]) {
-          shape.position.set(Math.random() * 4 - 2, Math.random() * 4 - 2, Math.random() * 4 - 2);
-          shape.velocity = new THREE.Vector3(Math.random() * 0.02 - 0.01, Math.random() * 0.02 - 0.01, Math.random() * 0.02 - 0.01);
+          shape.position.set(Math.random() * 8 - 4, Math.random() * 8 - 4, Math.random() * 8 - 4);
+          shape.velocity = new THREE.Vector3(Math.random() * 0.04 - 0.02, Math.random() * 0.04 - 0.02, Math.random() * 0.04 - 0.02);
+          shape.rotationSpeed = new THREE.Vector3(Math.random() * 0.02 - 0.01, Math.random() * 0.02 - 0.01, Math.random() * 0.02 - 0.01);
 
           shapes.push(shape);
           scene.add(shape);
@@ -78,18 +79,41 @@
 
       // Collision detection
       function checkCollisions(shapeA, shapeB) {
+       
         const boxA = new THREE.Box3().setFromObject(shapeA);
-        const boxB = new THREE.Box3().setFromObject(shapeB);
-        return boxA.intersectsBox(boxB);
-      }
+    const boxB = new THREE.Box3().setFromObject(shapeB);
+    return boxA.intersectsBox(boxB);
+  }
 
-      // Animation loop
-      function  animate() {
+  // Calculate camera view boundaries
+  function getViewBoundaries() {
+    const aspect = window.innerWidth / window.innerHeight;
+    const vFOV = (camera.fov * Math.PI) / 180;
+    const height = 2 * Math.tan(vFOV / 2) * camera.position.z;
+    const width = height * aspect;
+
+    return {
+      minX: -width / 2,
+      maxX: width / 2,
+      minY: -height / 2,
+      maxY: height / 2,
+      minZ: -5,
+      maxZ: 5,
+    };
+  }
+
+  // Animation loop
+  function animate() {
     requestAnimationFrame(animate);
 
-    // Update shape positions
+    // Update shape positions and rotations
     shapes.forEach((shape, index) => {
       shape.position.add(shape.velocity);
+      shape.rotation.x += shape.rotationSpeed.x;
+      shape.rotation.y += shape.rotationSpeed.y;
+      shape.rotation.z += shape.rotationSpeed.z;
+
+      const boundaries = getViewBoundaries();
 
       // Check for collisions with other shapes
       shapes.forEach((other, otherIndex) => {
@@ -100,12 +124,12 @@
 
       // Check for collisions with screen edges
       if (
-        shape.position.x <= -renderer.domElement.width / 300 ||
-        shape.position.x >= renderer.domElement.width / 300 ||
-        shape.position.y <= -renderer.domElement.height / 300 ||
-        shape.position.y >= renderer.domElement.height / 300 ||
-        shape.position.z <= -5 ||
-        shape.position.z >= 5
+        shape.position.x <= boundaries.minX ||
+        shape.position.x >= boundaries.maxX ||
+        shape.position.y <= boundaries.minY ||
+        shape.position.y >= boundaries.maxY ||
+        shape.position.z <= boundaries.minZ ||
+        shape.position.z >= boundaries.maxZ
       ) {
         shape.velocity.negate();
       }
@@ -118,4 +142,5 @@
   // Start the animation loop
   animate();
 </script>
-
+</body>
+</html>

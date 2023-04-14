@@ -6,9 +6,9 @@ const showConversationButton = document.getElementById("show-conversation");
 // Add the list of conversations to the menu
 const conversations = [
     { title: "Snake Game", file: "snake.md", code: "snake.html" },
-    { title: "Animations", file: "conversation2.md", code: "cube.html" },
-    { title: "A horse", file: "conversation2.md", code: "horse.html" },
-    { title: "Calculator", file: "conversation2.md", code: "calculator.html" },
+    { title: "Animations", file: "cube.md", code: "cube.html" },
+    { title: "Running horse", file: "horse.md", code: "horse.html" },
+    { title: "Calculator", file: "calculator.md", code: "calculator.html" },
     // Add more conversations as needed
 ];
 
