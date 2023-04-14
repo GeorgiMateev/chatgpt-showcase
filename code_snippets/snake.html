@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snake Game</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        #container {
+            display: flex;
+        }
+
+        #game-board {
+            position: relative;
+            background-color: black;
+            width: 300px;
+            height: 300px;
+            border: 1px solid white;
+            margin-top: 20px;
+        }
+
+        .snake,
+        .food {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+        }
+
+        .snake {
+            background-color: white;
+        }
+
+        .food {
+            background-color: red;
+        }
+
+        #game-over {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: red;
+            font-size: 24px;
+            text-align: center;
+        }
+
+        #user-panel {
+            margin-left: 20px;
+        }
+
+        #user-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        #user-list li {
+            cursor: pointer;
+            margin-bottom: 5px;
+        }
+
+        #user-list .selected {
+            font-weight: bold;
+        }
+
+        #current-player {
+            color: black;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        #new-max-score {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 30px;
+            text-align: center;
+            animation: blink 2s linear infinite;
+        }
+
+        @keyframes blink {
+            0%, 49.99% {
+                opacity: 0;
+            }
+            50%, 100% {
+                opacity: 1;
+            }
+        }
+
+        input[type="text"] {
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 100%;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div id="game-board">
+            <div id="game-over">Game Over<br>Press any key to restart</div>
+            <div id="new-max-score">New max score!</div>
+        </div>
+        <div id="user-panel">
+            <input type="text" id="username" placeholder="Enter your name">
+            <button id="add-user">Add</button>
+            <ul id="user-list"></ul>
+        </div>
+    </div>
+    <script>
+        const gameBoard = document.getElementById("game-board");
+        const gameOver = document.getElementById("game-over");
+        const usernameInput = document.getElementById("username");
+        const addUserButton = document.getElementById("add-user");
+        const userList = document.getElementById("user-list");
+        const newMaxScore = document.getElementById("new-max-score");
+
+        let snake = [{x: 140, y: 140}];
+        let food = {x: 100, y: 100};
+        let dx = 20;
+        let dy = 0;
+        let speed = 100;
+        let gameInterval;
+        let users = {};
+        let currentUser = null;
+
+        function placeElement(element, x, y) {
+            element.style.left = x + "px";
+            element.style.top = y + "px";
+        }
+
+        function checkCollision(head) {
+            return snake.slice(1).some(segment => head.x === segment.x && head.y === segment.y);
+        }
+
+        function loop() {
+            if (!currentUser) return;
+
+            const head = {x: snake[0].x + dx, y: snake[0].y + dy};
+
+            if (head.x < 0) head.x = gameBoard.clientWidth - 20;
+            if (head.x >= gameBoard.clientWidth) head.x = 0;
+            if (head.y < 0) head.y = gameBoard.clientHeight - 20;
+            if (head.y >= gameBoard.clientHeight) head.y = 0;
+
+            if (checkCollision(head)) {
+                clearInterval(gameInterval);
+                gameOver.style.display = "block";
+                if (snake.length - 1 > users[currentUser]) {
+                    users[currentUser] = snake.length - 1;
+                    updateUsers();
+                    showNewMaxScore();
+                }
+                return;
+            }
+
+            snake.unshift(head);
+            if (head.x === food.x && head.y === food.y) {
+                placeFood();
+                speed = Math.max(50, speed * 0.9);
+                clearInterval(gameInterval);
+                gameInterval = setInterval(loop, speed);
+            } else {
+                snake.pop();
+            }
+
+            gameBoard.innerHTML = '';
+            gameBoard.appendChild(gameOver);
+
+            for (const segment of snake) {
+                const snakeSegment = document.createElement("div");
+                snakeSegment.className = "snake";
+                placeElement(snakeSegment, segment.x, segment.y);
+                gameBoard.appendChild(snakeSegment);
+            }
+
+            const foodElement = document.createElement("div");
+            foodElement.className = "food";
+            placeElement(foodElement, food.x, food.y);
+            gameBoard.appendChild(foodElement);
+        }
+
+        function placeFood() {
+            food.x = Math.floor(Math.random() * (gameBoard.clientWidth / 20)) * 20;
+            food.y = Math.floor(Math.random() * (gameBoard.clientHeight / 20)) * 20;
+        }
+
+        function startGame() {
+            if (!currentUser) return;
+
+            gameOver.style.display = "none";
+            snake = [{x: 140, y: 140}];
+            food = {x: 100, y: 100};
+            dx = 20;
+            dy = 0;
+            speed = 100;
+            placeFood();
+            clearInterval(gameInterval);
+            gameInterval = setInterval(loop, speed);
+        }
+
+        function updateUsers() {
+            userList.innerHTML = "";
+            for (const user in users) {
+                const li = document.createElement("li");
+                li.innerText = `${user}: ${users[user]}`;
+                li.dataset.user = user;
+                if (currentUser === user) li.classList.add("selected");
+                userList.appendChild(li);
+            }
+        }
+
+        function showNewMaxScore() {
+            newMaxScore.style.display = "block";
+            setTimeout(() => {
+                newMaxScore.style.display = "none";
+            }, 2000);
+        }
+
+        addUserButton.addEventListener("click", () => {
+            const username = usernameInput.value.trim();
+            if (username && !users[username]) {
+                users[username] = 0;
+                updateUsers();
+                if (!currentUser) {
+                    currentUser = username;
+                    startGame();
+                }
+            }
+            usernameInput.value = "";
+        });
+
+        userList.addEventListener("click", (e) => {
+            if (e.target.tagName === "LI") {
+                currentUser = e.target.dataset.user;
+                updateUsers();
+                startGame();
+            }
+        });
+
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "ArrowUp" && dy === 0) {
+                dx = 0;
+                dy = -20;
+            } else if (e.key === "ArrowDown" && dy === 0) {
+                dx = 0;
+                dy = 20;
+            } else if (e.key === "ArrowLeft" && dx === 0) {
+                dx = -20;
+                dy = 0;
+            } else if (e.key === "ArrowRight" && dx === 0) {
+                dx = 20;
+                dy = 0;
+            }
+
+            if (gameOver.style.display === "block") {
+                startGame();
+            }
+        });
+
+    </script>
+</body>
+</html>

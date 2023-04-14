@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bouncing Shaded Cubes, Spheres, and Pyramids using Three.js</title>
+    <style>
+      body {
+        margin: 0;
+      }
+      canvas {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+      // Set up the scene, camera, and renderer
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+      const renderer = new THREE.WebGLRenderer();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      document.body.appendChild(renderer.domElement);
+
+      // Add a point light
+      const light = new THREE.PointLight(0xffffff, 1, 100);
+      light.position.set(10, 10, 10);
+      scene.add(light);
+
+      // Create the shapes and add them to the scene
+      const shapes = [];
+
+      // Cube creation function
+      function createCube(color) {
+        const geometry = new THREE.BoxGeometry(1, 1, 1);
+        const material = new THREE.MeshPhongMaterial({ color: color });
+        const cube = new THREE.Mesh(geometry, material);
+
+        return cube;
+      }
+
+      // Sphere creation function
+      function createSphere(color) {
+        const geometry = new THREE.SphereGeometry(0.5, 32, 32);
+        const material = new THREE.MeshPhongMaterial({ color: color });
+        const sphere = new THREE.Mesh(geometry, material);
+
+        return sphere;
+      }
+
+      // Pyramid (Tetrahedron) creation function
+      function createPyramid(color) {
+        const geometry = new THREE.TetrahedronGeometry(0.7);
+        const material = new THREE.MeshPhongMaterial({ color: color });
+        const pyramid = new THREE.Mesh(geometry, material);
+
+        return pyramid;
+      }
+
+      // Initialize the shapes and set random positions and velocities
+      for (let i = 0; i < 2; i++) {
+        const cube = createCube(0x00ff00);
+        const sphere = createSphere(0xffff00);
+        const pyramid = createPyramid(0xff0000);
+
+        for (const shape of [cube, sphere, pyramid]) {
+          shape.position.set(Math.random() * 4 - 2, Math.random() * 4 - 2, Math.random() * 4 - 2);
+          shape.velocity = new THREE.Vector3(Math.random() * 0.02 - 0.01, Math.random() * 0.02 - 0.01, Math.random() * 0.02 - 0.01);
+
+          shapes.push(shape);
+          scene.add(shape);
+        }
+      }
+
+      // Position the camera
+      camera.position.z = 10;
+
+      // Collision detection
+      function checkCollisions(shapeA, shapeB) {
+        const boxA = new THREE.Box3().setFromObject(shapeA);
+        const boxB = new THREE.Box3().setFromObject(shapeB);
+        return boxA.intersectsBox(boxB);
+      }
+
+      // Animation loop
+      function  animate() {
+    requestAnimationFrame(animate);
+
+    // Update shape positions
+    shapes.forEach((shape, index) => {
+      shape.position.add(shape.velocity);
+
+      // Check for collisions with other shapes
+      shapes.forEach((other, otherIndex) => {
+        if (index !== otherIndex && checkCollisions(shape, other)) {
+          shape.velocity.negate();
+        }
+      });
+
+      // Check for collisions with screen edges
+      if (
+        shape.position.x <= -renderer.domElement.width / 300 ||
+        shape.position.x >= renderer.domElement.width / 300 ||
+        shape.position.y <= -renderer.domElement.height / 300 ||
+        shape.position.y >= renderer.domElement.height / 300 ||
+        shape.position.z <= -5 ||
+        shape.position.z >= 5
+      ) {
+        shape.velocity.negate();
+      }
+    });
+
+    // Render the scene
+    renderer.render(scene, camera);
+  }
+
+  // Start the animation loop
+  animate();
+</script>
+
