@@ -273,6 +273,45 @@
             }
         });
 
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let touchEndX = 0;
+        let touchEndY = 0;
+
+        function handleTouchStart(e) {
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+        }
+
+        function handleTouchEnd(e) {
+            touchEndX = e.changedTouches[0].clientX;
+            touchEndY = e.changedTouches[0].clientY;
+
+            const deltaX = touchEndX - touchStartX;
+            const deltaY = touchEndY - touchStartY;
+
+            if (Math.abs(deltaX) > Math.abs(deltaY)) {
+                if (deltaX > 0 && dx === 0) {
+                    dx = 20;
+                    dy = 0;
+                } else if (deltaX < 0 && dx === 0) {
+                    dx = -20;
+                    dy = 0;
+                }
+            } else {
+                if (deltaY > 0 && dy === 0) {
+                    dx = 0;
+                    dy = 20;
+                } else if (deltaY < 0 && dy === 0) {
+                    dx = 0;
+                    dy = -20;
+                }
+            }
+        }
+
+        gameBoard.addEventListener("touchstart", handleTouchStart);
+        gameBoard.addEventListener("touchend", handleTouchEnd);
+
     </script>
 </body>
 </html>
