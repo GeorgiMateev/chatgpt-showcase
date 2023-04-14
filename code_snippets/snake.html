@@ -277,11 +277,13 @@
         let touchStartY = 0;
 
         function handleTouchStart(e) {
+            e.preventDefault();
             touchStartX = e.touches[0].clientX;
             touchStartY = e.touches[0].clientY;
         }
 
         function handleTouchEnd(e) {
+            e.preventDefault();
             const touchEndX = e.changedTouches[0].clientX;
             const touchEndY = e.changedTouches[0].clientY;
 

@@ -1988,3 +1988,80 @@ This code reverts to using the `handleTouchStart` and `handleTouchEnd` functions
 
 Now, the snake should change direction correctly based on the swipe direction on the game board.
 
+**Georgi**
+How can I block the page scroll events when swiping in the gane board?
+
+**ChatGPT4**
+
+To prevent page scrolling when swiping on the game board, you can use the `preventDefault()` method on the touch event. Add this line of code to both `handleTouchStart` and `handleTouchEnd` functions:
+
+```
+javascriptCopy codee.preventDefault();
+
+```
+
+Here's the updated code:
+
+```
+htmlCopy code<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snake Game</title>
+    <style>
+        /* ... All the previous styles remain the same ... */
+    </style>
+</head>
+<body>
+    <!-- ... All the previous HTML structure remains the same ... -->
+    <script>
+        // ... All the previous JavaScript code remains the same ...
+
+        let touchStartX = 0;
+        let touchStartY = 0;
+
+        function handleTouchStart(e) {
+            e.preventDefault();
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+        }
+
+        function handleTouchEnd(e) {
+            e.preventDefault();
+            const touchEndX = e.changedTouches[0].clientX;
+            const touchEndY = e.changedTouches[0].clientY;
+
+            const deltaX = touchEndX - touchStartX;
+            const deltaY = touchEndY - touchStartY;
+
+            if (Math.abs(deltaX) > Math.abs(deltaY)) {
+                if (deltaX > 0 && dx === 0) {
+                    dx = 20;
+                    dy = 0;
+                } else if (deltaX < 0 && dx === 0) {
+                    dx = -20;
+                    dy = 0;
+                }
+            } else {
+                if (deltaY > 0 && dy === 0) {
+                    dx = 0;
+                    dy = 20;
+                } else if (deltaY < 0 && dy === 0) {
+                    dx = 0;
+                    dy = -20;
+                }
+            }
+        }
+
+        gameBoard.addEventListener("touchstart", handleTouchStart);
+        gameBoard.addEventListener("touchend", handleTouchEnd);
+
+        // ... The rest of the JavaScript code remains the same ...
+    </script>
+</body>
+</html>
+
+```
+
+By calling `preventDefault()` on the touch events, you're preventing the default behavior of the browser, which includes page scrolling. With this change, the page should no longer scroll when swiping on the game board.
