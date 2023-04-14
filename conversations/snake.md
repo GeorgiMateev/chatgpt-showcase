@@ -1648,3 +1648,343 @@ javascriptCopy codefunction loop() {
 ```
 
 Now the code should work without any issues or errors.
+
+**Georgi**
+can you make the snake controllable by tapping on the playing field (for mobile phones)
+
+**ChatGPT4**
+
+Sure! To make the snake controllable by tapping on the playing field for mobile phones, you can modify the code to detect tap events and calculate the direction in which the user wants to move the snake. Here's the updated code that includes touch support:
+
+```
+htmlCopy code<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snake Game</title>
+    <style>
+        /* ... All the previous styles remain the same ... */
+    </style>
+</head>
+<body>
+    <!-- ... All the previous HTML structure remains the same ... -->
+    <script>
+        // ... All the previous JavaScript code remains the same ...
+
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let touchEndX = 0;
+        let touchEndY = 0;
+
+        function handleTouchStart(e) {
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+        }
+
+        function handleTouchEnd(e) {
+            touchEndX = e.changedTouches[0].clientX;
+            touchEndY = e.changedTouches[0].clientY;
+
+            const deltaX = touchEndX - touchStartX;
+            const deltaY = touchEndY - touchStartY;
+
+            if (Math.abs(deltaX) > Math.abs(deltaY)) {
+                if (deltaX > 0 && dx === 0) {
+                    dx = 20;
+                    dy = 0;
+                } else if (deltaX < 0 && dx === 0) {
+                    dx = -20;
+                    dy = 0;
+                }
+            } else {
+                if (deltaY > 0 && dy === 0) {
+                    dx = 0;
+                    dy = 20;
+                } else if (deltaY < 0 && dy === 0) {
+                    dx = 0;
+                    dy = -20;
+                }
+            }
+        }
+
+        gameBoard.addEventListener("touchstart", handleTouchStart);
+        gameBoard.addEventListener("touchend", handleTouchEnd);
+
+        // ... The rest of the JavaScript code remains the same ...
+    </script>
+</body>
+</html>
+
+```
+
+This code adds two new event listeners to the `gameBoard` element for handling `touchstart` and `touchend` events. When the user taps on the playing field, the `handleTouchStart` and `handleTouchEnd` functions calculate the direction the user wants to move the snake based on the difference in the X and Y coordinates of the touch points. The snake will then change direction accordingly.
+
+Now the snake should be controllable on mobile devices by tapping on the playing field.
+
+**Georgi**
+
+The snake is almost not turning on tap. Perhaps the calculations are not correct. I need it to turn up if he taps on the upper part of the board, down if he taps on the lower part, left if he taps on the left side and right if he taps on the right side.
+
+**ChatGPT4**
+
+I understand your requirements better now. Let's modify the code to make the snake turn based on the tap position relative to the snake's head. Here's the updated code:
+
+```
+htmlCopy code<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snake Game</title>
+    <style>
+        /* ... All the previous styles remain the same ... */
+    </style>
+</head>
+<body>
+    <!-- ... All the previous HTML structure remains the same ... -->
+    <script>
+        // ... All the previous JavaScript code remains the same ...
+
+        function handleTap(e) {
+            const tapX = e.touches[0].clientX;
+            const tapY = e.touches[0].clientY;
+
+            const head = snake[0];
+
+            const relX = tapX - head.x;
+            const relY = tapY - head.y;
+
+            if (Math.abs(relX) > Math.abs(relY)) {
+                if (relX > 0 && dx === 0) {
+                    dx = 20;
+                    dy = 0;
+                } else if (relX < 0 && dx === 0) {
+                    dx = -20;
+                    dy = 0;
+                }
+            } else {
+                if (relY > 0 && dy === 0) {
+                    dx = 0;
+                    dy = 20;
+                } else if (relY < 0 && dy === 0) {
+                    dx = 0;
+                    dy = -20;
+                }
+            }
+        }
+
+        gameBoard.addEventListener("touchend", handleTap);
+
+        // ... The rest of the JavaScript code remains the same ...
+    </script>
+</body>
+</html>
+
+```
+
+This code replaces the previous `handleTouchStart` and `handleTouchEnd` functions with a single `handleTap` function. The `handleTap` function calculates the tap position relative to the snake's head and changes the snake's direction based on which part of the playing field was tapped.
+
+Now, the snake should turn correctly based on the tap position relative to its head.
+
+**Georgi**
+
+There is an error: "Uncaught TypeError: Cannot read properties of undefined (reading 'clientX') at HTMLDivElement.handleTap"
+
+**ChatGPT4**
+
+My apologies for the error. The `clientX` and `clientY` properties are not available on the `touchend` event. Let's use the `touchstart` event instead of the `touchend` event to avoid this issue. Here's the corrected code:
+
+```
+htmlCopy code<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snake Game</title>
+    <style>
+        /* ... All the previous styles remain the same ... */
+    </style>
+</head>
+<body>
+    <!-- ... All the previous HTML structure remains the same ... -->
+    <script>
+        // ... All the previous JavaScript code remains the same ...
+
+        function handleTap(e) {
+            const tapX = e.touches[0].clientX;
+            const tapY = e.touches[0].clientY;
+
+            const head = snake[0];
+
+            const relX = tapX - head.x;
+            const relY = tapY - head.y;
+
+            if (Math.abs(relX) > Math.abs(relY)) {
+                if (relX > 0 && dx === 0) {
+                    dx = 20;
+                    dy = 0;
+                } else if (relX < 0 && dx === 0) {
+                    dx = -20;
+                    dy = 0;
+                }
+            } else {
+                if (relY > 0 && dy === 0) {
+                    dx = 0;
+                    dy = 20;
+                } else if (relY < 0 && dy === 0) {
+                    dx = 0;
+                    dy = -20;
+                }
+            }
+        }
+
+        gameBoard.addEventListener("touchstart", handleTap);
+
+        // ... The rest of the JavaScript code remains the same ...
+    </script>
+</body>
+</html>
+
+```
+
+Now the code should work without any errors, and the snake should turn correctly based on the tap position relative to its head.
+
+**Georgi**
+
+The direction should not be relative to the head. It has to be relative to the board. If you click on the upper part of the board, turn up, if you click on the bottom turn down and so on
+
+**ChatGPT4**
+
+I apologize for the confusion. Here's the updated code that changes the snake's direction based on the tap position relative to the board:
+
+```
+htmlCopy code<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snake Game</title>
+    <style>
+        /* ... All the previous styles remain the same ... */
+    </style>
+</head>
+<body>
+    <!-- ... All the previous HTML structure remains the same ... -->
+    <script>
+        // ... All the previous JavaScript code remains the same ...
+
+        function handleTap(e) {
+            const tapX = e.touches[0].clientX;
+            const tapY = e.touches[0].clientY;
+
+            const centerX = gameBoard.clientWidth / 2;
+            const centerY = gameBoard.clientHeight / 2;
+
+            const relX = tapX - centerX;
+            const relY = tapY - centerY;
+
+            if (Math.abs(relX) > Math.abs(relY)) {
+                if (relX > 0 && dx === 0) {
+                    dx = 20;
+                    dy = 0;
+                } else if (relX < 0 && dx === 0) {
+                    dx = -20;
+                    dy = 0;
+                }
+            } else {
+                if (relY > 0 && dy === 0) {
+                    dx = 0;
+                    dy = 20;
+                } else if (relY < 0 && dy === 0) {
+                    dx = 0;
+                    dy = -20;
+                }
+            }
+        }
+
+        gameBoard.addEventListener("touchstart", handleTap);
+
+        // ... The rest of the JavaScript code remains the same ...
+    </script>
+</body>
+</html>
+
+```
+
+In this updated code, the `handleTap` function calculates the tap position relative to the center of the game board instead of the snake's head. The snake will now change direction based on the tap position relative to the game board.
+
+Now, the snake should turn correctly based on the tap position relative to the game board.
+
+**Georgi**
+
+These tap events are not working as expected. Let's use swipe instead. If you swipe up on the game board, the snake turns up, if you swipe down, it turns down and so on.
+
+**ChatGPT4**
+
+I apologize for the confusion. Let's modify the code to detect swipe events and change the snake's direction accordingly. Here's the updated code:
+
+```
+htmlCopy code<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snake Game</title>
+    <style>
+        /* ... All the previous styles remain the same ... */
+    </style>
+</head>
+<body>
+    <!-- ... All the previous HTML structure remains the same ... -->
+    <script>
+        // ... All the previous JavaScript code remains the same ...
+
+        let touchStartX = 0;
+        let touchStartY = 0;
+
+        function handleTouchStart(e) {
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+        }
+
+        function handleTouchEnd(e) {
+            const touchEndX = e.changedTouches[0].clientX;
+            const touchEndY = e.changedTouches[0].clientY;
+
+            const deltaX = touchEndX - touchStartX;
+            const deltaY = touchEndY - touchStartY;
+
+            if (Math.abs(deltaX) > Math.abs(deltaY)) {
+                if (deltaX > 0 && dx === 0) {
+                    dx = 20;
+                    dy = 0;
+                } else if (deltaX < 0 && dx === 0) {
+                    dx = -20;
+                    dy = 0;
+                }
+            } else {
+                if (deltaY > 0 && dy === 0) {
+                    dx = 0;
+                    dy = 20;
+                } else if (deltaY < 0 && dy === 0) {
+                    dx = 0;
+                    dy = -20;
+                }
+            }
+        }
+
+        gameBoard.addEventListener("touchstart", handleTouchStart);
+        gameBoard.addEventListener("touchend", handleTouchEnd);
+
+        // ... The rest of the JavaScript code remains the same ...
+    </script>
+</body>
+</html>
+
+```
+
+This code reverts to using the `handleTouchStart` and `handleTouchEnd` functions from an earlier version of the code. The `handleTouchEnd` function calculates the difference in the X and Y coordinates of the start and end touch points to determine the swipe direction. If the swipe is horizontal, it will change the snake's direction left or right, and if the swipe is vertical, it will change the snake's direction up or down.
+
+Now, the snake should change direction correctly based on the swipe direction on the game board.
+
