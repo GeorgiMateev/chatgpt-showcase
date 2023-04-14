@@ -141,8 +141,10 @@ iframe {
     left: 50%;
     transform: translate(-50%, -50%);
     text-align: center;
-    color: #ffffff;
+    color: #020202;
     max-width: 80%;
+    background-color: white;
+    opacity: 0.5;
 }
 
 .title-container h1 {
