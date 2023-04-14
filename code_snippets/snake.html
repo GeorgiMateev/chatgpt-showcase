@@ -275,8 +275,6 @@
 
         let touchStartX = 0;
         let touchStartY = 0;
-        let touchEndX = 0;
-        let touchEndY = 0;
 
         function handleTouchStart(e) {
             touchStartX = e.touches[0].clientX;
@@ -284,8 +282,8 @@
         }
 
         function handleTouchEnd(e) {
-            touchEndX = e.changedTouches[0].clientX;
-            touchEndY = e.changedTouches[0].clientY;
+            const touchEndX = e.changedTouches[0].clientX;
+            const touchEndY = e.changedTouches[0].clientY;
 
             const deltaX = touchEndX - touchStartX;
             const deltaY = touchEndY - touchStartY;

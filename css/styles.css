@@ -156,9 +156,9 @@ iframe {
 }
 
 .github-link {
-    position: absolute;
+    /* position: absolute;
     top: 1rem;
-    right: 1rem;
+    right: 1rem; */
     width: 48px;
     height: 48px;
     display: flex;
