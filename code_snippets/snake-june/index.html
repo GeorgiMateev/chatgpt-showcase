@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Snake Game</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+  </head>
+  <body>
+    <div id="gameContainer">
+        <div id="userManagement">
+          <label id="addPlayerLabel">Add a new player to start the game</label>
+          <input type="text" id="userNameInput" />
+          <button id="addUserButton" onclick="addUser()">Add</button>
+          <label id="currentPlayerLabel"></label>
+          <label id="maxScoreLabel"></label>
+          <ul id="userList"></ul>
+        </div>
+        <div id="gameBoard">
+          <canvas id="snake"></canvas>
+        </div>
+      </div>
+      
+      
+    <script src="snake.js"></script>
+  </body>
+</html>

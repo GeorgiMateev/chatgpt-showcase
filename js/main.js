@@ -5,10 +5,11 @@ const showConversationButton = document.getElementById("show-conversation");
 
 // Add the list of conversations to the menu
 const conversations = [
-    { title: "Snake Game", file: "snake.md", code: "snake.html" },
-    { title: "Animations", file: "cube.md", code: "cube.html" },
-    { title: "Running horse", file: "horse.md", code: "horse.html" },
-    { title: "Calculator", file: "calculator.md", code: "calculator.html" },
+    { title: "Snake Game - May 2023 Model", url: "https://chat.openai.com/share/1fe7fc9f-cc4c-472b-b0a0-79e2adb8369c", code: "snake-june/index.html" },
+    { title: "Snake Game - March 2023 Model", url: "https://chat.openai.com/share/1fe7fc9f-cc4c-472b-b0a0-79e2adb8369c", code: "snake.html" },
+    { title: "Animations", url: "https://chat.openai.com/share/fb69553f-9143-4cf0-92cf-bbf911d96f5d", code: "cube.html" },
+    { title: "Running horse", url: "https://chat.openai.com/share/1721d18d-efb5-46c9-93c2-81486dacf53a", code: "horse.html" },
+    { title: "Calculator", url: "https://chat.openai.com/share/ed2006e9-36d7-475e-a0b5-687cbd013892", code: "calculator.html" },
     // Add more conversations as needed
 ];
 
@@ -20,14 +21,8 @@ conversations.forEach((conversation, index) => {
 });
 
 function loadConversation(index) {
-    // Load the conversation content
-    fetch(`conversations/${conversations[index].file}`)
-        .then((response) => response.text())
-        .then((text) => {
-            conversationContainer.innerHTML = marked.parse(text); // Convert Markdown to HTML using the marked library
-            conversationContainer.style.display = "none"; // Hide the conversation initially
-            showConversationButton.style.display = "block";
-        });
+    const conversationIframe = document.getElementById("conversation-iframe");
+    conversationIframe.src = conversations[index].url;
 
     // Load the code snippet
     const iframe = document.getElementById("code-container");
@@ -37,7 +32,7 @@ function loadConversation(index) {
     showConversationButton.onclick = () => {
         if (conversationContainer.style.display === "none") {
             conversationContainer.style.display = "block";
-            showConversationButton.textContent = "Hide Conversation";
+            // showConversationButton.textContent = "Hide Conversation";
         } else {
             conversationContainer.style.display = "none";
             showConversationButton.textContent = "Show Conversation";
